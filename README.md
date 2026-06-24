@@ -10,13 +10,13 @@ Key Highlights:
 
 Data Health Assessment: Solved data type anomalies where numeric fields (size and price) were stored as messy object types using pd.to_numeric with error coercing.
 
-Rigorous Outlier Filtering: Sanitized the data by filtering realistic market limits (apartment sizes between $15$ and $500$ sq.m, prices between $\$5\text{k}$ and $\$1\text{M}$, and validating floors).
+Rigorous Outlier Filtering: Sanitized the data by filtering realistic market limits (apartment sizes between 15 and 500 sq.m, prices between $5k and $1M, and validating floors).
 
 Modular Architecture: Built a unified preprocessing pipeline using Scikit-Learn's Pipeline and ColumnTransformer to avoid data leakage.
 
-Overfitting Diagnostics: Exposed the illusion of a greedy Decision Tree's low training error ($\$7,013.26$) using 10-Fold Cross-Validation ($\$29,768.51$).
+Overfitting Diagnostics: Exposed the illusion of a greedy Decision Tree's low training error ($7,013.26) using 10-Fold Cross-Validation ($29,768.51).
 
-Ensemble Resolution: Deployed a robust Random Forest Regressor yielding a highly stable error of $\$21,678.79$ on completely untouched test data.
+Ensemble Resolution: Deployed a robust Random Forest Regressor yielding a highly stable error of $21,678.79 on completely untouched test data.
 
 📂 Repository Structure
 
@@ -35,17 +35,17 @@ The system cleanly separates the data flow to ensure there is absolutely no data
 
 1. Preprocessing Steps:
 
-Train/Test Split: Locked away $20\%$ of the data using a strict train_test_split(..., test_size=0.2, random_state=21).
+Train/Test Split: Locked away 20% of the data using a strict train_test_split(..., test_size=0.2, random_state=21).
 
 Feature Selection: Selected district over location because they represent almost the exact same geographical information, reducing dimensionality and redundant features.
 
-Numerical Features ['rooms', 'size', 'level', 'max_levels'] $\rightarrow$ Standardized using StandardScaler.
+Numerical Features ['rooms', 'size', 'level', 'max_levels'] -> Standardized using StandardScaler.
 
-Categorical Features ['district'] $\rightarrow$ Encoded using OneHotEncoder(handle_unknown='ignore') for production safety (gracefully handles unseen districts).
+Categorical Features ['district'] -> Encoded using OneHotEncoder(handle_unknown='ignore') for production safety (gracefully handles unseen districts).
 
 📊 Performance Comparison & Evaluation
 
-The models were evaluated using Root Mean Squared Error ($RMSE$). A lower $RMSE$ indicates better pricing predictions (errors are represented in USD $).
+The models were evaluated using Root Mean Squared Error (RMSE). A lower RMSE indicates better pricing predictions (errors are represented in USD $).
 
 Model
 
@@ -79,21 +79,21 @@ Overfitting (Memorization)
 
 Decision Tree Regressor
 
-$10$-Fold Cross-Validation
+10-Fold Cross-Validation
 
 N/A
 
-$29,768.51 ($\pm$ $7,841.74)
+$29,768.51 (+/- $7,841.74)
 
 Severely Overfitted
 
 Random Forest Regressor
 
-$10$-Fold Cross-Validation
+10-Fold Cross-Validation
 
 N/A
 
-$24,206.62 ($\pm$ $5,433.91)
+$24,206.62 (+/- $5,433.91)
 
 Highly Stable Champion
 
@@ -109,7 +109,7 @@ Robust Generalization
 
 Key Takeaway:
 
-The Decision Tree appeared highly accurate during training ($\$7,013.26$ error) but completely collapsed under $10$-Fold Cross-Validation ($\$29,768.51$ Mean $RMSE$), proving it had memorized noise. Deploying an Ensemble Random Forest Regressor solved this, yielding a highly robust error of $\$21,678.79$ on completely untouched test data.
+The Decision Tree appeared highly accurate during training ($7,013.26 error) but completely collapsed under 10-Fold Cross-Validation ($29,768.51 Mean RMSE), proving it had memorized noise. Deploying an Ensemble Random Forest Regressor solved this, yielding a highly robust error of $21,678.79 on completely untouched test data.
 
 🛠️ Complete Implementation Code
 

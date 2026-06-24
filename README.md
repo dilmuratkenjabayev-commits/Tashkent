@@ -1,281 +1,283 @@
-Tashkent Housing Price Prediction: Overcoming Overfitting in Regression
+# 🏠 Tashkent Housing Price Prediction
 
-An end-to-end Machine Learning regression pipeline built to predict apartment prices in Tashkent, Uzbekistan. This project focuses on solid software engineering principles applied to data science, specifically addressing data cleaning, modular preprocessing pipelines, detecting model overfitting using 10-Fold Cross-Validation, and deploying a robust Random Forest ensemble model.
+An end-to-end Machine Learning regression project for predicting apartment prices in Tashkent, Uzbekistan. This project demonstrates how proper data cleaning, preprocessing pipelines, cross-validation, and ensemble learning can be used to build a reliable housing price prediction system.
 
-📌 Project Overview
+---
 
-The real estate market in Tashkent is highly dynamic but heavily plagued by extreme data anomalies, typos, and outliers. The objective of this project was to construct a robust machine learning system capable of handling messy, non-numeric values and predicting housing prices with high generalization stability.
+## 📌 Project Overview
 
-Key Highlights:
+The Tashkent real estate market contains numerous data quality issues, including outliers, missing values, inconsistent formats, and non-numeric entries stored as text. The goal of this project was to build a robust machine learning pipeline capable of handling noisy real-world data while maintaining strong generalization performance.
 
-Data Health Assessment: Solved data type anomalies where numeric fields (size and price) were stored as messy object types using pd.to_numeric with error coercing.
+### Key Features
 
-Rigorous Outlier Filtering: Sanitized the data by filtering realistic market limits (apartment sizes between 15 and 500 sq.m, prices between $5k and $1M, and validating floors).
+* ✔️ Data cleaning and type conversion
+* ✔️ Outlier detection and filtering
+* ✔️ Modular preprocessing using Scikit-Learn Pipelines
+* ✔️ Prevention of data leakage through proper train/test separation
+* ✔️ Model comparison and overfitting analysis
+* ✔️ 10-Fold Cross-Validation evaluation
+* ✔️ Random Forest ensemble model deployment
 
-Modular Architecture: Built a unified preprocessing pipeline using Scikit-Learn's Pipeline and ColumnTransformer to avoid data leakage.
+---
 
-Overfitting Diagnostics: Exposed the illusion of a greedy Decision Tree's low training error ($7,013.26) using 10-Fold Cross-Validation ($29,768.51).
+## 📂 Project Structure
 
-Ensemble Resolution: Deployed a robust Random Forest Regressor yielding a highly stable error of $21,678.79 on completely untouched test data.
-
-📂 Repository Structure
-
-Your project directory is structured as follows:
-
+```text
 TASHKENT_HOUSING_PREDICTION/
+│
 ├── data/
-│   └── housing_data_08-02-2021.csv   # Tashkent Real Estate Raw Dataset
-├── 05_ml_05_amaliyot.ipynb          # End-to-End ML Pipeline (Jupyter Notebook)
-└── README.md                         # Professional Project Documentation
+│   └── housing_data_08-02-2021.csv
+│
+├── 05_ml_05_amaliyot.ipynb
+│
+├── README.md
+│
+└── requirements.txt
+```
 
+---
 
-⚙️ How the Pipeline Works
+## 🔍 Data Preparation
 
-The system cleanly separates the data flow to ensure there is absolutely no data leakage from the testing set into the training steps.
+The original dataset contained several inconsistencies:
 
-1. Preprocessing Steps:
+* Numeric values stored as strings
+* Missing values
+* Unrealistic apartment sizes
+* Invalid floor information
+* Extreme pricing outliers
 
-Train/Test Split: Locked away 20% of the data using a strict train_test_split(..., test_size=0.2, random_state=21).
+### Data Cleaning
 
-Feature Selection: Selected district over location because they represent almost the exact same geographical information, reducing dimensionality and redundant features.
+Numeric columns were converted using:
 
-Numerical Features ['rooms', 'size', 'level', 'max_levels'] -> Standardized using StandardScaler.
+```python
+pd.to_numeric(..., errors="coerce")
+```
 
-Categorical Features ['district'] -> Encoded using OneHotEncoder(handle_unknown='ignore') for production safety (gracefully handles unseen districts).
+Rows containing invalid values were removed after conversion.
 
-📊 Performance Comparison & Evaluation
+### Outlier Filtering
 
-The models were evaluated using Root Mean Squared Error (RMSE). A lower RMSE indicates better pricing predictions (errors are represented in USD $).
+To improve model stability, records were filtered using realistic market constraints:
 
-Model
+| Feature | Range                          |
+| ------- | ------------------------------ |
+| Size    | 15 – 500 m²                    |
+| Price   | $5,000 – $1,000,000            |
+| Floors  | Valid floor relationships only |
 
-Evaluation Method
+---
 
-Training RMSE
+## ⚙️ Machine Learning Pipeline
 
-Validation Mean RMSE
+### 1. Train/Test Split
 
-Status / Verdict
+The dataset was split before any preprocessing:
 
-Linear Regression
+```python
+train_test_split(
+    df_clean,
+    test_size=0.2,
+    random_state=21
+)
+```
 
-Training Set Evaluation
+This ensured that the test set remained completely unseen during training.
 
-$26,582.97
+### 2. Feature Selection
 
-N/A
+Selected Features:
 
-Underfitting (Too simple)
+#### Numerical Features
 
-Decision Tree Regressor
+```python
+['rooms', 'size', 'level', 'max_levels']
+```
 
-Training Set Evaluation
+#### Categorical Features
 
-$7,013.26
+```python
+['district']
+```
 
-N/A
+The `district` feature was selected instead of `location` because both represented nearly identical geographical information.
 
-Overfitting (Memorization)
+---
 
-Decision Tree Regressor
+### 3. Preprocessing
 
-10-Fold Cross-Validation
+#### Numerical Pipeline
 
-N/A
+```python
+StandardScaler()
+```
 
-$29,768.51 (+/- $7,841.74)
+Used to normalize numerical features.
 
-Severely Overfitted
+#### Categorical Pipeline
 
-Random Forest Regressor
+```python
+OneHotEncoder(handle_unknown='ignore')
+```
 
-10-Fold Cross-Validation
+Used to safely encode districts while handling unseen categories during deployment.
 
-N/A
+#### Unified Pipeline
 
-$24,206.62 (+/- $5,433.91)
-
-Highly Stable Champion
-
-Random Forest (Final)
-
-Unseen Test Set Exam
-
-N/A
-
-🔥 $21,678.79
-
-Robust Generalization
-
-Key Takeaway:
-
-The Decision Tree appeared highly accurate during training ($7,013.26 error) but completely collapsed under 10-Fold Cross-Validation ($29,768.51 Mean RMSE), proving it had memorized noise. Deploying an Ensemble Random Forest Regressor solved this, yielding a highly robust error of $21,678.79 on completely untouched test data.
-
-🛠️ Complete Implementation Code
-
-Here is the exact implementation of our Scikit-Learn pipeline and regression models used inside the 05_ml_05_amaliyot.ipynb notebook:
-
-import pandas as pd
-import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.compose import ColumnTransformer
-from sklearn.linear_model import LinearRegression
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_squared_error
-from sklearn.model_selection import cross_val_score
-
-# ==========================================
-# 1. Data Splitting & Feature Grouping
-# ==========================================
-# df_clean is our cleaned dataset after outlier filtering
-train_set, test_set = train_test_split(df_clean, test_size=0.2, random_state=21)
-
-X_train = train_set.drop('price', axis=1)
-y_label = train_set['price'].copy()
-
-# Numeric columns
-num_attribs = ['rooms', 'size', 'level', 'max_levels']
-
-# String (categorical) columns
-cat_attribs = ['district'] # we took district instead of location because they both represent almost same thing
-
-print("Columns successfully grouped")
-
-# ==========================================
-# 2. Pipeline Preprocessing Architecture
-# ==========================================
-num_pipeline = Pipeline([
-    ('std', StandardScaler())
-])
-print("Numeric Pipeline is ready")
-
-full_pipeline = ColumnTransformer([
+```python
+ColumnTransformer([
     ('num', num_pipeline, num_attribs),
     ('cat', OneHotEncoder(handle_unknown='ignore'), cat_attribs)
 ])
-print("Full Pipeline is ready")
+```
 
-# Fit & Transform training features
-X_train_prepared = full_pipeline.fit_transform(X_train)
+This architecture prevents data leakage and guarantees consistent preprocessing.
 
-print(f"Not prepared data: {X_train.shape}")
-print(f"Prepared data for ML: {X_train_prepared.shape}")
+---
 
-# ==========================================
-# 3. Model Training & Diagnostics
-# ==========================================
+## 📊 Model Evaluation
 
-# Model A: Linear Regression Baseline
-LG_model = LinearRegression()
-LG_model.fit(X_train_prepared, y_label)
+Performance was measured using **Root Mean Squared Error (RMSE)**.
 
-LG_predictions = LG_model.predict(X_train_prepared)
-LG_mse = mean_squared_error(y_label, LG_predictions)
-LG_rmse = np.sqrt(LG_mse)
-print(f"Linear Regression model RMSE: ${LG_rmse:.2f}")
+Lower RMSE indicates better predictive performance.
 
-# Model B: Decision Tree (Overfitting Illusion)
-tree_model = DecisionTreeRegressor(random_state=42)
-tree_model.fit(X_train_prepared, y_label)
+### Model Comparison
 
-tree_predictions = tree_model.predict(X_train_prepared)
-tree_mse = mean_squared_error(y_label, tree_predictions)
-tree_rmse = np.sqrt(tree_mse)
-print(f"Decision Tree model RMSE: ${tree_rmse:.2f}")
+| Model             | Evaluation Method        | RMSE (USD)             | Verdict            |
+| ----------------- | ------------------------ | ---------------------- | ------------------ |
+| Linear Regression | Training Set             | $26,582.97             | Underfitting       |
+| Decision Tree     | Training Set             | $7,013.26              | Misleadingly Good  |
+| Decision Tree     | 10-Fold Cross Validation | $29,768.51 ± $7,841.74 | Severe Overfitting |
+| Random Forest     | 10-Fold Cross Validation | $24,206.62 ± $5,433.91 | Stable             |
+| Random Forest     | Unseen Test Set          | **$21,678.79**         | Best Model         |
 
-# Rigorous 10-Fold Cross-Validation for Decision Tree
-scores = cross_val_score(tree_model, X_train_prepared, y_label, scoring="neg_mean_squared_error", cv=10)
-tree_rmse_scores = np.sqrt(-scores)
-print("10 ta qatlamning alohida xatoliklari:")
-print(tree_rmse_scores)
-print(f"\nRMSE: ${tree_rmse_scores.mean():.2f}")
-print(f"Standart Deviation: ${tree_rmse_scores.std():.2f}")
+---
 
-# Model C: Random Forest Ensemble (The Champion)
-forest_model = RandomForestRegressor(n_estimators=100, random_state=42)
-forest_model.fit(X_train_prepared, y_label)
+## 🚨 Overfitting Analysis
 
-# Cross-Validation on Random Forest
-forest_scores = cross_val_score(forest_model, X_train_prepared, y_label, scoring="neg_mean_squared_error", cv=10)
-forest_rmse_scores = np.sqrt(-forest_scores)
-print(f"Random Forest Mean RMSE: ${forest_rmse_scores.mean():.2f}")
-print(f"Random Forest Standard Deviation: ${forest_rmse_scores.std():.2f}")
+At first glance, the Decision Tree model appeared excellent:
 
-# ==========================================
-# 4. Final Evaluation on Untouched Test Set
-# ==========================================
-X_test = test_set.drop("price", axis=1)
-y_test = test_set['price'].copy()
+```text
+Training RMSE = $7,013.26
+```
 
-# Crucial: Only transform the test set, NEVER fit!
-X_test_prepared = full_pipeline.transform(X_test)
+However, after applying 10-Fold Cross-Validation:
 
-final_predictions = forest_model.predict(X_test_prepared)
-final_mse = mean_squared_error(y_test, final_predictions)
-final_rmse = np.sqrt(final_mse)
-print(f"Final test set RMSE: ${final_rmse:.2f}")
+```text
+Validation RMSE = $29,768.51
+```
 
+The dramatic increase revealed that the model had memorized training data rather than learning meaningful patterns.
 
-🚀 Getting Started & Replication
+### Solution
 
-Follow these steps to replicate the pipeline and run the diagnostics on your local machine:
+A Random Forest ensemble model was introduced.
 
-1. Clone the repository
+Benefits:
 
+* Reduces variance
+* Improves generalization
+* More resistant to noise and outliers
+* Produces more stable predictions
+
+Final performance on completely unseen data:
+
+```text
+RMSE = $21,678.79
+```
+
+---
+
+## 🛠 Technologies Used
+
+* Python
+* Pandas
+* NumPy
+* Scikit-Learn
+* Matplotlib
+* Seaborn
+* Jupyter Notebook
+
+---
+
+## 🚀 Installation
+
+### Clone Repository
+
+```bash
 git clone https://github.com/dilmuratkenjabayev-commits/Tashkent.git
+
 cd Tashkent
+```
 
+### Create Virtual Environment
 
-2. Create and activate a Virtual Environment
+Windows:
 
+```bash
 python -m venv venv
-# On Windows
+
 venv\Scripts\activate
-# On macOS/Linux
+```
+
+macOS/Linux:
+
+```bash
+python -m venv venv
+
 source venv/bin/activate
+```
 
+### Install Dependencies
 
-3. Install required packages
+```bash
+pip install -r requirements.txt
+```
 
-Create a requirements.txt file containing the following:
+Required packages:
 
+```text
 pandas
 numpy
 matplotlib
 seaborn
 scikit-learn
 jupyter
+```
 
+---
 
-Then run:
+## ▶️ Running the Project
 
-pip install -r requirements.txt
+Launch Jupyter Notebook:
 
-
-4. Run the Jupyter Notebook
-
-Start Jupyter Notebook to open and execute the training pipeline steps:
-
+```bash
 jupyter notebook
+```
 
+Open:
 
-Open the 05_ml_05_amaliyot.ipynb notebook and run all cells to reproduce our final champion model.
+```text
+05_ml_05_amaliyot.ipynb
+```
 
-🎓 Author & Credits
+Run all cells to reproduce the complete machine learning workflow and model evaluation process.
 
-Developed by a passionate software engineer bridging the gap between clean code and reliable machine learning.
+---
 
-Developer: Dilmurat Kenjabayev
+## 🎓 Author
 
-Education:
+### Dilmurat Kenjabayev
 
-Software Engineering Student at IT Park University (Tashkent, Uzbekistan)
+Software Engineering Student at IT Park University (Tashkent)
 
-Data Science Student at School 21 (Tashkent, Uzbekistan)
+Data Science Student at School 21 (Tashkent)
 
-LinkedIn: [Your LinkedIn URL]
+---
 
-Medium Article: https://medium.com/@dilmuratkenjabayev/dont-trust-your-first-model-overcoming-overfitting-in-tashkent-real-estate-regression-792528a53ce8
+## 📄 License
+
+This project is licensed under the MIT License.
+
+Feel free to use, modify, and distribute this project for educational and research purposes.
